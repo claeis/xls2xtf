@@ -1,0 +1,18 @@
+INTERLIS 2.3;
+
+MODEL ModelA (de)
+AT "mailto:ceis@localhost"
+VERSION "2015-03-17"  =
+  IMPORTS CatalogueObjects_V1,LocalisationCH_V1;
+
+  TOPIC Codelisten =
+
+    CLASS Art1
+    EXTENDS CatalogueObjects_V1.Catalogues.Item =
+      Code : MANDATORY TEXT*3;
+      Description : MANDATORY LocalisationCH_V1.MultilingualText;
+    END Art1;
+  END Codelisten;
+END ModelA.
+
+

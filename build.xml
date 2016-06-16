@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="jar" name="xls2xtf">
+
+  <!-- set global properties for this build -->
+  <property name="src" value="${basedir}/src"/>
+  <property name="build" value="${basedir}/build"/>
+  <property name="dist" value="${basedir}/dist"/>
+  <!-- <property name="keystore" value=""/>
+  <property name="alias" value=""/>
+  <property name="storepass" value=""/> -->
+  <property file="user.properties" />
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <property name="projectjar" value="${build}/jar/${ant.project.name}.jar"/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+    <mkdir dir="${build}/jar"/>
+    <mkdir dir="${dist}"/>
+  </target>
+
+  <target depends="init" name="compile">
+    <!-- Compile the java code from ${src} into ${build}/classes -->
+    <mkdir dir="${build}/classes"/>
+    <javac destdir="${build}/classes" includes="**/*.java" excludes="**/test/*.java"  source="1.6" target="1.6">
+      <classpath>
+	    	<pathelement location="lib/ili2c.jar"/>
+	    	<pathelement location="lib/poi-3.11-20141221.jar"/>
+	    	<pathelement location="lib/poi-ooxml-3.11-20141221.jar"/>
+	    	<pathelement location="lib/poi-ooxml-schemas-3.11-20141221.jar"/>
+	    	<pathelement location="lib/xmlbeans-2.6.0.jar"/>
+      </classpath>
+    	<src path="${src}" />
+    	<!-- <src path="${build}/src"/> -->
+    </javac>
+  </target>
+
+
+  <target depends="init,compile" name="jar">
+    <propertyfile file="${src}/ch/ehi/xls2xtf/Version.properties">
+	<!-- <entry  key="versionMicro" type="int" value="1" operation="+"/> -->
+	<entry  key="versionDate" type="date" value="now" pattern="yyyyMMdd"/>
+    </propertyfile>
+
+    <delete file="${projectjar}" quiet="true"/>
+
+    <jar jarfile="${projectjar}">
+    	<manifest>
+    	  <attribute name="Main-Class" value="ch.ehi.xls2xtf.Main"/>
+    	  <attribute name="Class-Path" value="lib/ili2c.jar lib/poi-3.11-20141221.jar lib/poi-ooxml-3.11-20141221.jar lib/poi-ooxml-schemas-3.11-20141221.jar lib/xmlbeans-2.6.0.jar"/>    	  
+    	</manifest>
+	<fileset dir="${build}/classes" includes="**/*.class"/>
+    	<fileset dir="${src}" includes="**/*.properties"/>
+    	<!-- <fileset dir="resources/de" includes="**/*.properties"/>
+    	<fileset dir="resources/fr" includes="**/*.properties"/>
+	<fileset dir="resources/it" includes="**/*.properties"/> -->
+    	<fileset dir="${src}" includes="**/*.gif"/>
+    	<fileset dir="${src}" includes="**/*.jpg"/>
+    	<fileset dir="${src}" includes="**/*.png"/>
+    </jar>
+  </target>
+  
+  <target depends="init" name="buildnr">
+    <property file="${src}/ch/ehi/xls2xtf/Version.properties" prefix="buildnr."/>
+    <property name="buildnr" value="${buildnr.versionMajor}.${buildnr.versionMinor}.${buildnr.versionMicro}"/>
+    <!-- <property name="buildnr" value="${DSTAMP}"/> -->
+  </target>
+  
+  <target depends="init,buildnr" name="bindist">
+    <delete file="${dist}/${ant.project.name}-${buildnr}.zip" quiet="true"/>
+    <zip zipfile="${dist}/${ant.project.name}-${buildnr}.zip">
+    	<zipfileset dir="${build}/jar" prefix="${ant.project.name}-${buildnr}">
+	    	<patternset includes="${ant.project.name}.jar"/>
+    	</zipfileset>
+    	<zipfileset dir="." prefix="${ant.project.name}-${buildnr}">
+	    	<patternset includes="lib/ili2c.jar"/>
+	    	<patternset includes="lib/poi-3.11-20141221.jar"/>
+	    	<patternset includes="lib/poi-ooxml-3.11-20141221.jar"/>
+	    	<patternset includes="lib/poi-ooxml-schemas-3.11-20141221.jar"/>
+	    	<patternset includes="lib/xmlbeans-2.6.0.jar"/>
+	    	<patternset includes="docs/LICENSE.*"/>
+	    	<patternset includes="docs/README.txt"/>
+	    	<patternset includes="docs/CHANGELOG.txt"/>
+    	</zipfileset>
+    </zip>
+  </target>
+  <target depends="init,buildnr" name="srcdist">
+    <delete file="${dist}/${ant.project.name}-${buildnr}.src.zip" quiet="true"/>
+    <zip zipfile="${dist}/${ant.project.name}-${buildnr}.src.zip">
+    	<zipfileset dir="." prefix="${ant.project.name}-${buildnr}">
+	    	<patternset includes="build.xml"/>
+	    	<!-- <patternset includes="lib/**"/> -->
+	    	<patternset includes="docs/LICENSE.*"/>
+	    	<patternset includes="docs/README.txt"/>
+	    	<patternset includes="docs/README.src.txt"/>
+	    	<patternset includes="docs/CHANGELOG.txt"/>
+	    	<patternset includes="src/**" excludes="**/CVS/*;**/bak~/*"/>
+		<patternset includes="resources/de/**/*.properties"/>
+		<patternset includes="resources/fr/**/*.properties"/>
+		<patternset includes="resources/it/**/*.properties"/>
+	    	<patternset includes="lib/ili2c.jar"/>
+	    	<patternset includes="lib/poi-3.11-20141221.jar"/>
+	    	<patternset includes="lib/poi-ooxml-3.11-20141221.jar"/>
+	    	<patternset includes="lib/poi-ooxml-schemas-3.11-20141221.jar"/>
+	    	<patternset includes="lib/xmlbeans-2.6.0.jar"/>
+    	</zipfileset>
+    </zip>
+  </target>
+  <target name="clean">
+    <delete dir="${build}"/>
+  </target>
+
+</project>
