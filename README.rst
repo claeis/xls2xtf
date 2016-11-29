@@ -32,5 +32,5 @@ To export the codelists from the xls file, run xls2xtf with::
 
 To setup the xls file based on a model, run xls2xtf with::
 
- java -jar xls2xtf.jar [options] --inixls file.xls model.ili
+ java -jar xls2xtf.jar [options] --initxls file.xls model.ili
 
